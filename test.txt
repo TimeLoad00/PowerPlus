@@ -1,0 +1,8 @@
+Command { Val: "Hey" }
+
+Second {
+    Set1: "\"Hello World\""
+    Set2: 223
+}
+
+Set-ExecutionPolicy { _: Unrestricted }
