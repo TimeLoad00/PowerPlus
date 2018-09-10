@@ -1,10 +1,10 @@
-Command { Val: "Hey" }
+Command { Argument: "Value" }
 
 Second {
-    Set1: "\"Hello World\""
-    Set2: 223
+    Val1: "one",
+    Val2: "two"
 }
 
-Set-ExecutionPolicy { _: "Unrestricted" }
+Third { Argument: "Value", Recursion: Command { Argument: "Val" } }
 
-Testing { Val1: "Hello", Val2: Something { _: "Recursion" } }
+Set-ExecutionPolicy { _: "Unrestricted" }
