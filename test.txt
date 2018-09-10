@@ -1,8 +1,7 @@
 Command { Val: "Hey" }
 
-Second {
-    Set1: "\"Hello World\""
-    Set2: 223
-}
+Second { Set1: "\"Hello World\"" }
 
-Set-ExecutionPolicy { _: Unrestricted }
+Set-ExecutionPolicy { _: "Unrestricted" }
+
+Testing { Val1: "Hello", Val2: Something { _: "Willfull" } }

@@ -2,36 +2,72 @@ package runtime
 
 import (
     "fmt"
-   "../ast"
    "../token"
-    "../parser"
+    "../lexer"
 )
 
-func Run(tree *parser.Tree) {
-    for _, stmt := range tree.Statements {
-        if stmt.Type == token.Eof { break }
+var tokens *lexer.Tokens
+
+func Run(tok *lexer.Tokens) {
+    tokens = tok
+
+    for {
+        statement := runStatement()
         
-        if stmt.Type == token.Command {
-            RunCommand(stmt)
-        }
+        if statement == "" { break }
+        
+        fmt.Println(statement)
     }
 }
 
-func RunCommand(stmt ast.Stmt) {
-    command := stmt.Val[0].Val
+func runStatement() string {
+    tok := tokens.ReadToken()
+    statement := ""
     
-    for i := 1; i < len(stmt.Val); i++ {
-        arg := stmt.Val[i].Val
-        val := stmt.Val[i + 1].Val
+    if tok.Type == token.Eof { return "" }
+    
+    if tok.Type == token.Ident {
+        ident := tok.Val
+        tok = tokens.ReadToken()
         
-        if arg != "_" {
-            command += " -" + arg
+        if tok.Type == token.LeftBrace {
+            statement = runCommand(ident)
+        } else {
+            statement = ident
         }
-        
-        command += " " + val
-        
-        i += 1
+    } else if tok.Type == token.String {
+        return tok.Val
     }
     
-    fmt.Println(command)
+    return statement
+}
+
+func runCommand(command string) string {
+    for {
+        arg := tokens.ReadToken()
+        
+        if arg.Type != token.Ident { panic("expected ident") }
+        
+        if arg.Val == "_" {
+            command += " "
+        } else {
+            command += " -" + arg.Val + " "
+        }
+        
+        if tokens.PeekToken().Type != token.Colon { panic("expected colon") }
+        tokens.Pos++
+        
+        command += runStatement()
+        
+        if tokens.PeekToken().Type == token.Comma {
+            tokens.Pos++
+        } else if tokens.PeekToken().Type == token.RightBrace {
+            tokens.Pos++
+            break
+        } else {
+            panic ("expected comma")
+        }
+    }
+    
+    return command
 }
